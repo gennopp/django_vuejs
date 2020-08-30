@@ -1,0 +1,51 @@
+{% extends 'TrainingApp/base.html' %}
+{% load static %}
+
+<html>
+{% block content %}
+	
+	{% if user.is_authenticated %}
+	<div id="app">
+		<ul class="upper" v-if="myorders">
+			<li v-for="order in myorders">
+				<div>Restaurant : ${ order.restaurant.name }</div>
+				<ul>
+					<li v-for="dish in order.dish">
+						<div> ${dish.name} </div>
+						<div> ${dish.price} </div>
+						
+					</li>
+				</ul>
+				<div>Total Price :  ${ order.total_price }</div>
+				<br>
+			</li>
+		</ul>
+	</div>
+
+	<script>
+		var app = new Vue({
+			el : '#app',
+			delimiters: ['${','}'],
+			data: {
+				myorders: [],
+			},
+			mounted: function(){
+				var self = this;
+				$.ajax({
+					type: 'GET', 
+					url: '/api/myorder/',
+					success:function (response) {
+						self.myorders = (response);
+					},
+					error:function(error){
+						console.log(error);
+					}
+				});
+			}
+		})
+	</script>
+
+	{% endif %}
+
+{% endblock%}
+</html>

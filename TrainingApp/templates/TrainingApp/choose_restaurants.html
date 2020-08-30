@@ -1,0 +1,37 @@
+{% extends 'TrainingApp/base.html' %}
+
+{% load static %}
+<html>
+{% block content %}
+
+	{% if user.is_authenticated %}
+		{% if all_restaurants %}
+			<ul>
+				{% for restaurant in all_restaurants %}
+				<li>
+					<a href="{% url 'order' restaurant.pk %}" id={{restaurant.pk}} onclick="sendId('{{restaurant.pk}}')">
+						{{restaurant.name}}
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>Nothing to show</p>
+		{% endif %}
+	{% endif %}
+
+	<script type="text/javascript">
+        function sendId(pk){
+            $.ajax({
+                type: 'POST',
+                url: '/order',
+                data: pk,
+                success: function(result) {
+                },
+            });
+        }
+    </script>
+
+{% endblock %}
+</html>
+

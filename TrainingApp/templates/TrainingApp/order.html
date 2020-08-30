@@ -1,0 +1,63 @@
+{% extends 'TrainingApp/base.html' %}
+{% load static %}
+
+<html>
+<script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+{% block content %}
+    {% if user.is_authenticated %}
+        <h2>New Order</h2>
+
+        <form method="POST" class="post-form">
+            {% csrf_token %}
+            <div id="parentLayout">
+                {% for dish in r_dish %}
+                    <input
+                            type="checkbox"
+                            id={{ dish.id }}
+                                    value= {{ dish.name }} >
+                    {{ dish.name }}  :-  Rs.{{ dish.price }}
+                    <br>
+                {% endfor %}
+
+                <button
+                        type="submit"
+                        class="save btn btn-default"
+                        onclick="order()">
+                    Click to Order
+                </button>
+            </div>
+        </form>
+
+<script>
+    function order() {
+        let choices = document.getElementById("parentLayout").children;
+        let request_data = {};
+
+        if (choices) {
+            for (let i = 0; i < choices.length; i += 2) {
+                if (choices[i].checked) {
+                    request_data[i] = choices[i].id;
+                }
+            }
+            console.log(request_data);
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ request.path }}',
+                data: {
+                    dish: request_data,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                dataType: 'json',
+            });
+        } else {
+            alert("No Dishes!");
+        }
+    }
+
+</script>
+    {% endif %}
+{% endblock %}
+</html>

@@ -1,0 +1,16 @@
+{% extends 'TrainingApp/base.html' %}
+
+{% load static %}
+
+{% block content %}
+	{% if restaurants %}
+	<h1>All Restaurants </h1>
+		<ul>
+			{% for restaurant in restaurants %}
+			<li>{{restaurant.name}}</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>Nothing to show</p>
+	{% endif %}
+{% endblock %}

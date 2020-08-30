@@ -1,0 +1,22 @@
+<html>
+{% block content %}
+	<!-- {% if user.is_authenticated %} -->
+
+		{% if orders %}
+			<ul>
+				{% for order in orders %}
+				<li>
+                    <div>{{order.user.username}}</div>
+                    <div>{{order.restaurant.name}}</div>
+                    <div>{{order.dish}}</div>
+                    <div>{{order.total_price}}</div>
+                </li>
+				<br>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>Nothing to show</p>
+		{% endif %}
+	<!-- {% endif %} -->
+{% endblock %}
+</html>

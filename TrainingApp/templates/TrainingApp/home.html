@@ -1,0 +1,87 @@
+{% extends 'TrainingApp/base.html' %}
+
+{% load static %}
+{% block content %}
+{% if user.is_authenticated %}
+    <style>
+        ul {
+            list-style: none;
+        }
+
+        li {
+            display: inline-block;
+            margin: 1em;
+        }
+
+        .dishes-block {
+            margin: 1em;
+            padding: 1em;
+        }
+    </style>
+    {% verbatim %}
+    <div id="app">
+        <div class="choose-restaurant">
+            <h1>Where would you like to dine tonight?</h1>
+            <select v-model="chosenRestaurant">
+                <option v-for="restaurant in restaurants" :value="restaurant">
+                    {{ restaurant.name }}
+                </option>
+            </select>
+        </div>
+        <div class="create-order" v-if="chosenRestaurant">
+            <h1>{{ chosenRestaurant.name }}</h1>
+            <ul>
+                <li v-for="dish in chosenRestaurant.dishes_served" class="dishes-block">
+                    <input type="checkbox" :value="dish.id" v-model="chosenDishes"> </input>
+
+                    <div class="dish-name">{{ dish.name }}</div>
+                    <div class="dish-price">{{ dish.price }}</div>
+                </li>
+            </ul>
+
+            <input type="button" value="Place order" v-on:click="placeOrder()">
+        </div>
+    </div>
+    {% endverbatim %}
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                restaurants: [],
+                chosenDishes: [],
+                chosenRestaurant: '',
+            },
+            mounted: function () {
+                var self = this;
+                $.ajax({
+                    type: 'GET',
+                    url: 'api/restaurants/',
+                    success: function (restaurants) {
+                        self.restaurants = restaurants;
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
+            methods: {
+                placeOrder: function () {
+                    console.log(this.chosenDishes);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "orders" %}',
+                        data: {
+                            dish : this.chosenDishes,
+                            restaurant: this.chosenRestaurant['id'],
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        dataType: 'json',
+                    });
+                    setTimeout(function(){ window.location.href = 'myorder'}, 2000);
+                }
+            }
+        })
+    </script>
+{% endif %}
+{% endblock %}
